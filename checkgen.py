@@ -10,12 +10,33 @@ import sys
 e = ET.parse(str(sys.argv[1]))
 root = e.getroot()
 
-for cl in root:
-    print(cl.find('title').text)
-    for l in cl.findall('item'):
+def items(pg, il):    
+    for l in pg.findall('item'):
+        #to avoid error due to empty tags
         try:
-            print('\t' + l.find('name').text + '\t -- \t' +
-              l.find('value').text)
+            print('\t' * il + l.find('name').text + '\t -- \t' +
+            l.find('value').text)
         except:
-            pass
+           pass
+    print()
 
+def pages(cl, il):
+    for p in cl.findall('page'):
+        items(p, il + 1)
+
+for cl in root:
+    if False:
+        #cl.find('group') is None:
+        print(cl.find('title').text, '\n')
+        if cl.find('page') is None:    
+            items(cl, 1)
+        else:
+            pages(cl, 1)
+    else:
+        for c in cl.findall('checklist'): 
+            if c.find('page') is None:
+                print('\t', c.find('title').text)
+                items(c, 2)
+            else:
+                print('\t', c.find('title').text)
+                pages(c, 1)
